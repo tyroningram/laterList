@@ -40,13 +40,15 @@ async def get_item(item_id: int, db: Session = Depends(get_db)):
     return db_item
 
 @router.patch("/{item_id}", response_model=ItemResponse)
-async def update_item(item_id: int, item: ItemUpdate, db: Session = Depends(get_db)):
+def update_item(item_id: int, item: ItemUpdate, db: Session = Depends(get_db)):
+    db_item = db.query(Item).filter(Item.id == item_id).first()
 
-    db_item  = db.query(Item).filter(Item.id == item_id).first()
-    if not db_item:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found.")
-    
-    for field, value in item.model_dump(mode="json").items():
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Item not found.")
+
+    update_data = item.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
         setattr(db_item, field, value)
 
     db.commit()
