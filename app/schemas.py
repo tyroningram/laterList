@@ -10,14 +10,12 @@ class MediaType(str, Enum):
     show = "show"
     book = "book"
 
-
 class ItemStatus(str, Enum):
     planned = "planned"
     watching = "watching"
     reading = "reading"
     completed = "completed"
     dropped = "dropped"
-
 
 class ItemCreate(BaseModel):
     title: str = Field(min_length=1, max_length=200)
@@ -44,3 +42,17 @@ class ItemUpdate(BaseModel):
     notes: str | None = Field(default=None, max_length=500)
     rating: float | None = None
     priority: int | None = None
+
+class UserCreate(BaseModel):
+    email: str = Field(max_length=50)
+    username: str = Field(max_length=50)
+    first_name: str = Field(max_length=50)
+    password: str
+
+class UserResponse(BaseModel):
+    username: str = Field(max_length=50)
+    first_name: str = Field(max_length=50)
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
